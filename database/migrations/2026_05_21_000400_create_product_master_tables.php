@@ -29,6 +29,17 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('model_kit_manufacturers', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('slug')->unique();
+            $table->string('country')->nullable();
+            $table->string('website_url')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('product_categories')->nullOnDelete();
@@ -64,6 +75,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('product_variants');
         Schema::dropIfExists('products');
+        Schema::dropIfExists('model_kit_manufacturers');
         Schema::dropIfExists('product_categories');
         Schema::dropIfExists('units');
     }
