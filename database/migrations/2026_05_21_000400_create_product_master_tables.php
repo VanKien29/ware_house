@@ -29,15 +29,45 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('model_kit_manufacturers', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('slug')->unique();
+            $table->string('country')->nullable();
+            $table->string('website_url')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('model_kit_series', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('manufacturer_id')->nullable()->constrained('model_kit_manufacturers')->nullOnDelete();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('universe')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('product_categories')->nullOnDelete();
             $table->foreignId('base_unit_id')->constrained('units')->restrictOnDelete();
+            $table->foreignId('manufacturer_id')->nullable()->constrained('model_kit_manufacturers')->nullOnDelete();
+            $table->foreignId('series_id')->nullable()->constrained('model_kit_series')->nullOnDelete();
+            $table->string('kit_code')->nullable()->unique();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('brand')->nullable();
+            $table->string('grade')->nullable();
+            $table->string('scale')->nullable();
+            $table->string('material')->nullable();
+            $table->unsignedSmallInteger('runner_count')->nullable();
+            $table->date('release_date')->nullable();
+            $table->string('box_art_url')->nullable();
             $table->text('description')->nullable();
-            $table->enum('status', ['active', 'inactive', 'discontinued'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'discontinued', 'pre_order'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -48,10 +78,15 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->string('barcode')->nullable()->unique();
             $table->string('variant_name')->nullable();
+            $table->string('edition')->default('standard');
+            $table->string('box_condition')->default('new');
+            $table->string('item_condition')->default('sealed');
+            $table->boolean('has_manual')->default(true);
+            $table->boolean('has_decals')->default(true);
             $table->decimal('purchase_price', 14, 2)->default(0);
             $table->decimal('sale_price', 14, 2)->default(0);
             $table->decimal('min_stock', 14, 3)->nullable();
-            $table->enum('status', ['active', 'inactive', 'discontinued'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'discontinued', 'pre_order'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -64,6 +99,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('product_variants');
         Schema::dropIfExists('products');
+        Schema::dropIfExists('model_kit_series');
+        Schema::dropIfExists('model_kit_manufacturers');
         Schema::dropIfExists('product_categories');
         Schema::dropIfExists('units');
     }

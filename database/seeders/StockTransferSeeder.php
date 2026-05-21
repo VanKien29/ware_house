@@ -25,7 +25,7 @@ class StockTransferSeeder extends Seeder
                 'status' => 'completed',
                 'shipped_at' => '2026-05-09 09:00:00',
                 'received_at' => '2026-05-10 11:00:00',
-                'note' => 'Chuyen switch red tu HCM ra HN.',
+                'note' => 'Chuyen MGEX Strike Freedom tu HCM ra HN.',
                 'created_by' => $managerId,
                 'completed_by' => $managerId,
                 'created_at' => $now,
@@ -34,7 +34,7 @@ class StockTransferSeeder extends Seeder
         );
 
         $transferId = DB::table('stock_transfers')->where('transfer_number', 'TR-2026-0001')->value('id');
-        $variantId = DB::table('product_variants')->where('sku', 'SKU-MX-RED')->value('id');
+        $variantId = DB::table('product_variants')->where('sku', 'SKU-MGEX-SF')->value('id');
         $fromLocationId = DB::table('storage_locations')
             ->where('warehouse_id', $fromWarehouseId)
             ->where('code', 'A-01-02')

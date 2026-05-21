@@ -23,7 +23,7 @@ class NotificationAuditSeeder extends Seeder
                 'user_id' => $managerId,
                 'type' => 'count_variance',
                 'title' => 'Kiem ke co chenh lech',
-                'body' => 'CNT-2026-0001 lech thieu 1 SKU-RK61-BLK.',
+                'body' => 'CNT-2026-0001 lech thieu 1 SKU-HG-RX78-REVIVE.',
                 'data' => ['route' => '/inventory-counts/CNT-2026-0001', 'count_id' => $countId],
             ],
             [

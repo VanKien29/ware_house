@@ -16,20 +16,20 @@ class PartnerSeeder extends Seeder
 
         $suppliers = [
             [
-                'code' => 'SUP-TECH',
-                'name' => 'Tech Supply Viet Nam',
+                'code' => 'SUP-HOBBY',
+                'name' => 'Hobby Link Viet Nam',
                 'contact_name' => 'Nguyen Minh',
                 'phone' => '0901000001',
-                'email' => 'sales@tech-supply.test',
+                'email' => 'sales@hobby-link.test',
                 'address' => 'Binh Thanh, TP. Ho Chi Minh',
                 'tax_code' => '0312345678',
             ],
             [
-                'code' => 'SUP-OFFICE',
-                'name' => 'Office Gear Co.',
+                'code' => 'SUP-IMPORT',
+                'name' => 'Mecha Import Co.',
                 'contact_name' => 'Tran An',
                 'phone' => '0901000002',
-                'email' => 'contact@office-gear.test',
+                'email' => 'contact@mecha-import.test',
                 'address' => 'Hai Ba Trung, Ha Noi',
                 'tax_code' => '0109876543',
             ],
@@ -45,18 +45,18 @@ class PartnerSeeder extends Seeder
         $customers = [
             [
                 'code' => 'CUS-RETAIL',
-                'name' => 'Retail Store Alpha',
+                'name' => 'Hobby Store Alpha',
                 'contact_name' => 'Le Bao',
                 'phone' => '0902000001',
-                'email' => 'alpha@retail.test',
+                'email' => 'alpha@hobby-store.test',
                 'address' => 'Thu Duc, TP. Ho Chi Minh',
             ],
             [
-                'code' => 'CUS-B2B',
-                'name' => 'B2B Office Client',
+                'code' => 'CUS-COLLECTOR',
+                'name' => 'Collector Club',
                 'contact_name' => 'Pham Linh',
                 'phone' => '0902000002',
-                'email' => 'linh@b2b-office.test',
+                'email' => 'linh@collector-club.test',
                 'address' => 'Nam Tu Liem, Ha Noi',
             ],
         ];
