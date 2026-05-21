@@ -1,0 +1,464 @@
+// Warehouse Management DBML
+// Laravel + Vue learning project
+
+Enum user_role {
+  admin
+  warehouse_manager
+  purchasing_staff
+  sales_staff
+  staff
+}
+
+Enum account_status {
+  active
+  locked
+  inactive
+}
+
+Enum warehouse_status {
+  active
+  inactive
+}
+
+Enum product_status {
+  active
+  inactive
+  discontinued
+}
+
+Enum movement_type {
+  opening_balance
+  purchase_receipt
+  sales_issue
+  transfer_out
+  transfer_in
+  adjustment
+  stock_count
+  return_in
+  return_out
+}
+
+Enum reference_type {
+  purchase_order
+  goods_receipt
+  sales_order
+  stock_transfer
+  stock_adjustment
+  inventory_count
+  manual
+}
+
+Enum po_status {
+  draft
+  ordered
+  partially_received
+  received
+  cancelled
+}
+
+Enum receipt_status {
+  draft
+  posted
+  cancelled
+}
+
+Enum sales_order_status {
+  draft
+  confirmed
+  partially_issued
+  issued
+  cancelled
+}
+
+Enum transfer_status {
+  draft
+  in_transit
+  completed
+  cancelled
+}
+
+Enum adjustment_status {
+  draft
+  posted
+  cancelled
+}
+
+Enum count_status {
+  draft
+  counting
+  reconciled
+  cancelled
+}
+
+Enum notification_type {
+  low_stock
+  po_due
+  transfer_pending
+  count_variance
+  system
+}
+
+Table users {
+  id bigint [pk, increment]
+  name varchar [not null]
+  email varchar [not null, unique]
+  email_verified_at timestamp
+  password varchar [not null]
+  role user_role [not null, default: 'staff']
+  status account_status [not null, default: 'active']
+  remember_token varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table warehouses {
+  id bigint [pk, increment]
+  code varchar [not null, unique]
+  name varchar [not null]
+  address text
+  manager_id bigint [ref: > users.id]
+  status warehouse_status [not null, default: 'active']
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table storage_locations {
+  id bigint [pk, increment]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  code varchar [not null]
+  name varchar [not null]
+  type varchar [not null, default: 'rack']
+  is_pickable boolean [not null, default: true]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+
+  Indexes {
+    (warehouse_id, code) [unique]
+  }
+}
+
+Table suppliers {
+  id bigint [pk, increment]
+  code varchar [not null, unique]
+  name varchar [not null]
+  contact_name varchar
+  phone varchar
+  email varchar
+  address text
+  tax_code varchar
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table customers {
+  id bigint [pk, increment]
+  code varchar [not null, unique]
+  name varchar [not null]
+  contact_name varchar
+  phone varchar
+  email varchar
+  address text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table units {
+  id bigint [pk, increment]
+  code varchar [not null, unique]
+  name varchar [not null]
+  precision tinyint [not null, default: 0]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table product_categories {
+  id bigint [pk, increment]
+  parent_id bigint [ref: > product_categories.id]
+  name varchar [not null]
+  slug varchar [not null, unique]
+  description text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table products {
+  id bigint [pk, increment]
+  category_id bigint [ref: > product_categories.id]
+  base_unit_id bigint [not null, ref: > units.id]
+  name varchar [not null]
+  slug varchar [not null, unique]
+  brand varchar
+  description text
+  status product_status [not null, default: 'active']
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table product_variants {
+  id bigint [pk, increment]
+  product_id bigint [not null, ref: > products.id]
+  sku varchar [not null, unique]
+  barcode varchar [unique]
+  variant_name varchar
+  purchase_price decimal(14,2) [not null, default: 0]
+  sale_price decimal(14,2) [not null, default: 0]
+  min_stock decimal(14,3)
+  status product_status [not null, default: 'active']
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table stock_levels {
+  id bigint [pk, increment]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  location_id bigint [ref: > storage_locations.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  quantity_on_hand decimal(14,3) [not null, default: 0]
+  quantity_reserved decimal(14,3) [not null, default: 0]
+  reorder_point decimal(14,3)
+  max_stock decimal(14,3)
+  last_movement_at timestamp
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (warehouse_id, location_id, product_variant_id) [unique]
+    (product_variant_id)
+  }
+}
+
+Table stock_movements {
+  id bigint [pk, increment]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  location_id bigint [ref: > storage_locations.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  movement_type movement_type [not null]
+  reference_type reference_type [not null, default: 'manual']
+  reference_id bigint
+  quantity_change decimal(14,3) [not null]
+  quantity_after decimal(14,3) [not null]
+  unit_cost decimal(14,2)
+  note text
+  created_by bigint [ref: > users.id]
+  created_at timestamp
+
+  Indexes {
+    (warehouse_id, product_variant_id, created_at)
+    (reference_type, reference_id)
+  }
+}
+
+Table purchase_orders {
+  id bigint [pk, increment]
+  po_number varchar [not null, unique]
+  supplier_id bigint [not null, ref: > suppliers.id]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  status po_status [not null, default: 'draft']
+  order_date date [not null]
+  expected_date date
+  note text
+  created_by bigint [ref: > users.id]
+  approved_by bigint [ref: > users.id]
+  approved_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table purchase_order_items {
+  id bigint [pk, increment]
+  purchase_order_id bigint [not null, ref: > purchase_orders.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  ordered_quantity decimal(14,3) [not null]
+  received_quantity decimal(14,3) [not null, default: 0]
+  unit_price decimal(14,2) [not null, default: 0]
+  note text
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (purchase_order_id, product_variant_id) [unique]
+  }
+}
+
+Table goods_receipts {
+  id bigint [pk, increment]
+  receipt_number varchar [not null, unique]
+  purchase_order_id bigint [ref: > purchase_orders.id]
+  supplier_id bigint [not null, ref: > suppliers.id]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  status receipt_status [not null, default: 'draft']
+  received_at timestamp
+  note text
+  created_by bigint [ref: > users.id]
+  posted_by bigint [ref: > users.id]
+  posted_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table goods_receipt_items {
+  id bigint [pk, increment]
+  goods_receipt_id bigint [not null, ref: > goods_receipts.id]
+  purchase_order_item_id bigint [ref: > purchase_order_items.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  location_id bigint [ref: > storage_locations.id]
+  received_quantity decimal(14,3) [not null]
+  unit_cost decimal(14,2) [not null, default: 0]
+  note text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table sales_orders {
+  id bigint [pk, increment]
+  so_number varchar [not null, unique]
+  customer_id bigint [ref: > customers.id]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  status sales_order_status [not null, default: 'draft']
+  order_date date [not null]
+  required_date date
+  note text
+  created_by bigint [ref: > users.id]
+  confirmed_by bigint [ref: > users.id]
+  confirmed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table sales_order_items {
+  id bigint [pk, increment]
+  sales_order_id bigint [not null, ref: > sales_orders.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  ordered_quantity decimal(14,3) [not null]
+  issued_quantity decimal(14,3) [not null, default: 0]
+  unit_price decimal(14,2) [not null, default: 0]
+  note text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table stock_transfers {
+  id bigint [pk, increment]
+  transfer_number varchar [not null, unique]
+  from_warehouse_id bigint [not null, ref: > warehouses.id]
+  to_warehouse_id bigint [not null, ref: > warehouses.id]
+  status transfer_status [not null, default: 'draft']
+  shipped_at timestamp
+  received_at timestamp
+  note text
+  created_by bigint [ref: > users.id]
+  completed_by bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table stock_transfer_items {
+  id bigint [pk, increment]
+  stock_transfer_id bigint [not null, ref: > stock_transfers.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  from_location_id bigint [ref: > storage_locations.id]
+  to_location_id bigint [ref: > storage_locations.id]
+  quantity decimal(14,3) [not null]
+  note text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table stock_adjustments {
+  id bigint [pk, increment]
+  adjustment_number varchar [not null, unique]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  status adjustment_status [not null, default: 'draft']
+  reason varchar [not null]
+  note text
+  created_by bigint [ref: > users.id]
+  posted_by bigint [ref: > users.id]
+  posted_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table stock_adjustment_items {
+  id bigint [pk, increment]
+  stock_adjustment_id bigint [not null, ref: > stock_adjustments.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  location_id bigint [ref: > storage_locations.id]
+  quantity_change decimal(14,3) [not null]
+  unit_cost decimal(14,2)
+  note text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table inventory_counts {
+  id bigint [pk, increment]
+  count_number varchar [not null, unique]
+  warehouse_id bigint [not null, ref: > warehouses.id]
+  status count_status [not null, default: 'draft']
+  started_at timestamp
+  finished_at timestamp
+  note text
+  created_by bigint [ref: > users.id]
+  reconciled_by bigint [ref: > users.id]
+  reconciled_at timestamp
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table inventory_count_items {
+  id bigint [pk, increment]
+  inventory_count_id bigint [not null, ref: > inventory_counts.id]
+  product_variant_id bigint [not null, ref: > product_variants.id]
+  location_id bigint [ref: > storage_locations.id]
+  system_quantity decimal(14,3) [not null, default: 0]
+  counted_quantity decimal(14,3)
+  variance_quantity decimal(14,3)
+  note text
+  counted_by bigint [ref: > users.id]
+  counted_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table notifications {
+  id bigint [pk, increment]
+  user_id bigint [not null, ref: > users.id]
+  type notification_type [not null]
+  title varchar [not null]
+  body text
+  data json
+  read_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table audit_logs {
+  id bigint [pk, increment]
+  actor_id bigint [ref: > users.id]
+  action varchar [not null]
+  target_type varchar
+  target_id bigint
+  before_values json
+  after_values json
+  ip_address varchar
+  user_agent text
+  created_at timestamp
+
+  Indexes {
+    (actor_id, created_at)
+    (target_type, target_id)
+  }
+}
