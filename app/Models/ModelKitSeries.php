@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ModelKitManufacturer extends Model
+class ModelKitSeries extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'model_kit_series';
+
     protected $fillable = [
+        'manufacturer_id',
         'name',
         'slug',
-        'country',
-        'website_url',
+        'universe',
         'description',
     ];
 
@@ -21,13 +23,13 @@ class ModelKitManufacturer extends Model
         'deleted_at' => 'datetime',
     ];
 
-    public function series()
+    public function manufacturer()
     {
-        return $this->hasMany(ModelKitSeries::class, 'manufacturer_id');
+        return $this->belongsTo(ModelKitManufacturer::class, 'manufacturer_id');
     }
 
     public function products()
     {
-        return $this->hasMany(Product::class, 'manufacturer_id');
+        return $this->hasMany(Product::class, 'series_id');
     }
 }

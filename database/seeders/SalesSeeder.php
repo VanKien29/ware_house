@@ -26,7 +26,7 @@ class SalesSeeder extends Seeder
                 'status' => 'issued',
                 'order_date' => '2026-05-07',
                 'required_date' => '2026-05-08',
-                'note' => 'Don xuat hang mau cho cua hang retail.',
+                'note' => 'Don xuat model kit mau cho cua hang hobby.',
                 'created_by' => $salesId,
                 'confirmed_by' => $managerId,
                 'confirmed_at' => '2026-05-07 15:00:00',
@@ -37,8 +37,8 @@ class SalesSeeder extends Seeder
 
         $salesOrderId = DB::table('sales_orders')->where('so_number', 'SO-2026-0001')->value('id');
         $items = [
-            ['sku' => 'SKU-RK61-BLK', 'ordered_quantity' => 4, 'issued_quantity' => 4, 'unit_price' => 790000],
-            ['sku' => 'SKU-MX-RED', 'ordered_quantity' => 25, 'issued_quantity' => 25, 'unit_price' => 7000],
+            ['sku' => 'SKU-HG-RX78-REVIVE', 'ordered_quantity' => 2, 'issued_quantity' => 2, 'unit_price' => 320000],
+            ['sku' => 'SKU-MGEX-SF', 'ordered_quantity' => 1, 'issued_quantity' => 1, 'unit_price' => 2350000],
         ];
 
         foreach ($items as $item) {

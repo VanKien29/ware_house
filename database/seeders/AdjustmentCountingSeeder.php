@@ -23,7 +23,7 @@ class AdjustmentCountingSeeder extends Seeder
                 'warehouse_id' => $warehouseId,
                 'status' => 'posted',
                 'reason' => 'damaged',
-                'note' => 'Hang loi trong qua trinh kiem tra.',
+                'note' => 'Hop bi mop trong qua trinh kiem tra.',
                 'created_by' => $managerId,
                 'posted_by' => $managerId,
                 'posted_at' => '2026-05-11 10:00:00',
@@ -33,19 +33,19 @@ class AdjustmentCountingSeeder extends Seeder
         );
 
         $adjustmentId = DB::table('stock_adjustments')->where('adjustment_number', 'ADJ-2026-0001')->value('id');
-        $switchVariantId = DB::table('product_variants')->where('sku', 'SKU-MX-RED')->value('id');
-        $switchLocationId = DB::table('storage_locations')
+        $mgexVariantId = DB::table('product_variants')->where('sku', 'SKU-MGEX-SF')->value('id');
+        $premiumKitLocationId = DB::table('storage_locations')
             ->where('warehouse_id', $warehouseId)
             ->where('code', 'A-01-02')
             ->value('id');
 
         DB::table('stock_adjustment_items')->updateOrInsert(
-            ['stock_adjustment_id' => $adjustmentId, 'product_variant_id' => $switchVariantId],
+            ['stock_adjustment_id' => $adjustmentId, 'product_variant_id' => $mgexVariantId],
             [
-                'location_id' => $switchLocationId,
-                'quantity_change' => -2,
-                'unit_cost' => 4500,
-                'note' => 'Loai bo 2 switch loi.',
+                'location_id' => $premiumKitLocationId,
+                'quantity_change' => -1,
+                'unit_cost' => 1800000,
+                'note' => 'Loai bo 1 hop MGEX bi mop nang.',
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -68,19 +68,19 @@ class AdjustmentCountingSeeder extends Seeder
         );
 
         $countId = DB::table('inventory_counts')->where('count_number', 'CNT-2026-0001')->value('id');
-        $keyboardVariantId = DB::table('product_variants')->where('sku', 'SKU-RK61-BLK')->value('id');
-        $keyboardLocationId = DB::table('storage_locations')
+        $rx78VariantId = DB::table('product_variants')->where('sku', 'SKU-HG-RX78-REVIVE')->value('id');
+        $standardKitLocationId = DB::table('storage_locations')
             ->where('warehouse_id', $warehouseId)
             ->where('code', 'A-01-01')
             ->value('id');
 
         DB::table('inventory_count_items')->updateOrInsert(
-            ['inventory_count_id' => $countId, 'product_variant_id' => $keyboardVariantId, 'location_id' => $keyboardLocationId],
+            ['inventory_count_id' => $countId, 'product_variant_id' => $rx78VariantId, 'location_id' => $standardKitLocationId],
             [
-                'system_quantity' => 26,
-                'counted_quantity' => 25,
+                'system_quantity' => 16,
+                'counted_quantity' => 15,
                 'variance_quantity' => -1,
-                'note' => 'Lech thieu 1 ban phim sau kiem ke.',
+                'note' => 'Lech thieu 1 hop HG RX-78-2 sau kiem ke.',
                 'counted_by' => $staffId,
                 'counted_at' => '2026-05-12 10:20:00',
                 'created_at' => $now,

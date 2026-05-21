@@ -13,7 +13,7 @@ class PurchasingSeeder extends Seeder
     public function run(): void
     {
         $now = now();
-        $supplierId = DB::table('suppliers')->where('code', 'SUP-TECH')->value('id');
+        $supplierId = DB::table('suppliers')->where('code', 'SUP-HOBBY')->value('id');
         $warehouseId = DB::table('warehouses')->where('code', 'HCM01')->value('id');
         $creatorId = DB::table('users')->where('email', 'purchase@warehouse.test')->value('id');
         $managerId = DB::table('users')->where('email', 'manager@warehouse.test')->value('id');
@@ -26,7 +26,7 @@ class PurchasingSeeder extends Seeder
                 'status' => 'received',
                 'order_date' => '2026-05-01',
                 'expected_date' => '2026-05-05',
-                'note' => 'Don mua hang seed cho du an quan ly kho.',
+                'note' => 'Don nhap model kit Bandai cho kho HCM.',
                 'created_by' => $creatorId,
                 'approved_by' => $managerId,
                 'approved_at' => '2026-05-01 10:00:00',
@@ -37,8 +37,8 @@ class PurchasingSeeder extends Seeder
 
         $poId = DB::table('purchase_orders')->where('po_number', 'PO-2026-0001')->value('id');
         $items = [
-            ['sku' => 'SKU-RK61-BLK', 'ordered_quantity' => 10, 'received_quantity' => 10, 'unit_price' => 620000],
-            ['sku' => 'SKU-MX-RED', 'ordered_quantity' => 50, 'received_quantity' => 50, 'unit_price' => 4500],
+            ['sku' => 'SKU-HG-RX78-REVIVE', 'ordered_quantity' => 8, 'received_quantity' => 8, 'unit_price' => 180000],
+            ['sku' => 'SKU-MGEX-SF', 'ordered_quantity' => 3, 'received_quantity' => 3, 'unit_price' => 1800000],
         ];
 
         foreach ($items as $item) {
@@ -65,7 +65,7 @@ class PurchasingSeeder extends Seeder
                 'warehouse_id' => $warehouseId,
                 'status' => 'posted',
                 'received_at' => '2026-05-05 09:00:00',
-                'note' => 'Nhap hang theo PO-2026-0001.',
+                'note' => 'Nhap model kit theo PO-2026-0001.',
                 'created_by' => $managerId,
                 'posted_by' => $managerId,
                 'posted_at' => '2026-05-05 09:30:00',
@@ -79,7 +79,7 @@ class PurchasingSeeder extends Seeder
             ->where('warehouse_id', $warehouseId)
             ->where('code', 'A-01-01')
             ->value('id');
-        $switchLocationId = DB::table('storage_locations')
+        $premiumKitLocationId = DB::table('storage_locations')
             ->where('warehouse_id', $warehouseId)
             ->where('code', 'A-01-02')
             ->value('id');
@@ -95,7 +95,7 @@ class PurchasingSeeder extends Seeder
                 ['goods_receipt_id' => $receiptId, 'product_variant_id' => $variantId],
                 [
                     'purchase_order_item_id' => $poItemId,
-                    'location_id' => $item['sku'] === 'SKU-RK61-BLK' ? $locationId : $switchLocationId,
+                    'location_id' => $item['sku'] === 'SKU-HG-RX78-REVIVE' ? $locationId : $premiumKitLocationId,
                     'received_quantity' => $item['received_quantity'],
                     'unit_cost' => $item['unit_price'],
                     'note' => null,
