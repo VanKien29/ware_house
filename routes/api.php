@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ModelKitManufacturerController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UnitController;
@@ -15,4 +16,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('product-categories', ProductCategoryController::class);
     Route::apiResource('units', UnitController::class);
     Route::apiResource('products', ProductController::class);
+    Route::apiResource('model-kit-manufacturers', ModelKitManufacturerController::class);
 });
