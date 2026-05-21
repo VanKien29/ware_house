@@ -1,5 +1,5 @@
-// Warehouse Management DBML
-// Laravel + Vue learning project
+// Model Kit Warehouse Management DBML
+// Laravel + Vue learning project for plastic model kits
 
 Enum user_role {
   admin
@@ -24,6 +24,7 @@ Enum product_status {
   active
   inactive
   discontinued
+  pre_order
 }
 
 Enum movement_type {
@@ -187,13 +188,45 @@ Table product_categories {
   deleted_at timestamp
 }
 
+Table model_kit_manufacturers {
+  id bigint [pk, increment]
+  name varchar [not null, unique]
+  slug varchar [not null, unique]
+  country varchar
+  website_url varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
+Table model_kit_series {
+  id bigint [pk, increment]
+  manufacturer_id bigint [ref: > model_kit_manufacturers.id]
+  name varchar [not null]
+  slug varchar [not null, unique]
+  universe varchar
+  description text
+  created_at timestamp
+  updated_at timestamp
+  deleted_at timestamp
+}
+
 Table products {
   id bigint [pk, increment]
   category_id bigint [ref: > product_categories.id]
   base_unit_id bigint [not null, ref: > units.id]
+  manufacturer_id bigint [ref: > model_kit_manufacturers.id]
+  series_id bigint [ref: > model_kit_series.id]
+  kit_code varchar [unique]
   name varchar [not null]
   slug varchar [not null, unique]
-  brand varchar
+  grade varchar
+  scale varchar
+  material varchar
+  runner_count smallint
+  release_date date
+  box_art_url varchar
   description text
   status product_status [not null, default: 'active']
   created_at timestamp
@@ -207,6 +240,11 @@ Table product_variants {
   sku varchar [not null, unique]
   barcode varchar [unique]
   variant_name varchar
+  edition varchar [not null, default: 'standard']
+  box_condition varchar [not null, default: 'new']
+  item_condition varchar [not null, default: 'sealed']
+  has_manual boolean [not null, default: true]
+  has_decals boolean [not null, default: true]
   purchase_price decimal(14,2) [not null, default: 0]
   sale_price decimal(14,2) [not null, default: 0]
   min_stock decimal(14,3)
