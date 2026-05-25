@@ -61,8 +61,16 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $data = $request->validated();
-        $data['slug'] = Str::slug($data['name']);
+        $baseSlug = Str::slug($data['name']);
+        $slug = $baseSlug;
+        $count = 1;
 
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $count;
+            $count++;
+        }
+
+        $data['slug'] = $slug;
         $product = Product::create($data);
         $product->load(['category', 'baseUnit', 'manufacturer', 'series']);
 
