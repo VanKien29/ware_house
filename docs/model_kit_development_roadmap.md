@@ -24,17 +24,17 @@ Vì vậy hướng đi hợp lý tiếp theo là hoàn thiện catalog model kit
 
 ## Thứ Tự Làm Tổng Quan
 
-| Thứ tự | Cụm chức năng | Bảng chính | Lý do làm ở bước này |
-| --- | --- | --- | --- |
-| 1 | Master data nhỏ | `units`, `product_categories`, `model_kit_manufacturers`, `model_kit_series` | Product cần những bảng này trước |
-| 2 | Product catalog | `products`, `product_variants` | Mọi nghiệp vụ kho đều đi theo SKU/variant |
-| 3 | Warehouse master | `warehouses`, `storage_locations` | Stock cần biết hàng nằm ở kho nào, vị trí nào |
-| 4 | Inventory core | `stock_levels`, `stock_movements` | Nền tảng tồn kho và lịch sử biến động |
-| 5 | Purchasing | `suppliers`, `purchase_orders`, `goods_receipts` | Luồng nhập hàng làm tăng tồn |
-| 6 | Sales/Issue | `customers`, `sales_orders` | Luồng xuất hàng làm giảm tồn |
-| 7 | Stock transfer | `stock_transfers` | Chuyển hàng giữa kho/vị trí |
-| 8 | Adjustment & counting | `stock_adjustments`, `inventory_counts` | Sửa lệch tồn, kiểm kê thực tế |
-| 9 | Reports & notification | `notifications`, `audit_logs` | Làm sau khi đã có dữ liệu nghiệp vụ |
+| Thứ tự | Cụm chức năng          | Bảng chính                                                                   | Lý do làm ở bước này                          |
+| ------ | ---------------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
+| 1      | Master data nhỏ        | `units`, `product_categories`, `model_kit_manufacturers`, `model_kit_series` | Product cần những bảng này trước              |
+| 2      | Product catalog        | `products`, `product_variants`                                               | Mọi nghiệp vụ kho đều đi theo SKU/variant     |
+| 3      | Warehouse master       | `warehouses`, `storage_locations`                                            | Stock cần biết hàng nằm ở kho nào, vị trí nào |
+| 4      | Inventory core         | `stock_levels`, `stock_movements`                                            | Nền tảng tồn kho và lịch sử biến động         |
+| 5      | Purchasing             | `suppliers`, `purchase_orders`, `goods_receipts`                             | Luồng nhập hàng làm tăng tồn                  |
+| 6      | Sales/Issue            | `customers`, `sales_orders`                                                  | Luồng xuất hàng làm giảm tồn                  |
+| 7      | Stock transfer         | `stock_transfers`                                                            | Chuyển hàng giữa kho/vị trí                   |
+| 8      | Adjustment & counting  | `stock_adjustments`, `inventory_counts`                                      | Sửa lệch tồn, kiểm kê thực tế                 |
+| 9      | Reports & notification | `notifications`, `audit_logs`                                                | Làm sau khi đã có dữ liệu nghiệp vụ           |
 
 ## Phase 1 - Master Data
 
@@ -54,12 +54,12 @@ Vì vậy hướng đi hợp lý tiếp theo là hoàn thiện catalog model kit
 
 ### API gợi ý
 
-| Method | Endpoint | Ý nghĩa |
-| --- | --- | --- |
-| GET | `/api/units` | Danh sách đơn vị tính |
-| GET | `/api/product-categories` | Danh sách danh mục |
-| GET | `/api/model-kit-manufacturers` | Danh sách hãng sản xuất |
-| GET | `/api/model-kit-series` | Danh sách series/dòng model |
+| Method | Endpoint                       | Ý nghĩa                     |
+| ------ | ------------------------------ | --------------------------- |
+| GET    | `/api/units`                   | Danh sách đơn vị tính       |
+| GET    | `/api/product-categories`      | Danh sách danh mục          |
+| GET    | `/api/model-kit-manufacturers` | Danh sách hãng sản xuất     |
+| GET    | `/api/model-kit-series`        | Danh sách series/dòng model |
 
 ### Giải thích luồng
 
@@ -122,15 +122,15 @@ flowchart LR
 
 ### API gợi ý
 
-| Method | Endpoint | Ý nghĩa |
-| --- | --- | --- |
-| GET | `/api/products` | Danh sách product |
-| POST | `/api/products` | Tạo product |
-| GET | `/api/products/{id}` | Xem chi tiết product kèm relation |
-| PUT | `/api/products/{id}` | Cập nhật product |
-| DELETE | `/api/products/{id}` | Xóa product |
-| GET | `/api/product-variants` | Danh sách SKU |
-| POST | `/api/product-variants` | Tạo SKU/variant |
+| Method | Endpoint                | Ý nghĩa                           |
+| ------ | ----------------------- | --------------------------------- |
+| GET    | `/api/products`         | Danh sách product                 |
+| POST   | `/api/products`         | Tạo product                       |
+| GET    | `/api/products/{id}`    | Xem chi tiết product kèm relation |
+| PUT    | `/api/products/{id}`    | Cập nhật product                  |
+| DELETE | `/api/products/{id}`    | Xóa product                       |
+| GET    | `/api/product-variants` | Danh sách SKU                     |
+| POST   | `/api/product-variants` | Tạo SKU/variant                   |
 
 ### Vue nên làm
 
@@ -424,19 +424,19 @@ Report nên làm sau khi đã có luồng nhập/xuất/tồn thật. Nếu làm
 
 ## Thứ Tự Làm Vue
 
-| Thứ tự | Màn hình | Lý do |
-| --- | --- | --- |
-| 1 | Login, layout, menu, auth guard | Cần nền để vào các trang sau |
-| 2 | Users, Units, Categories | CRUD đơn giản để ôn form/table |
-| 3 | Manufacturers, Series | Master data cho product |
-| 4 | Products, Product Detail | Trung tâm của domain model kit |
-| 5 | Product Variants | SKU thực tế để quản lý tồn |
-| 6 | Warehouses, Locations | Nơi lưu trữ hàng |
-| 7 | Stock Levels, Stock Movements | Xem tồn và lịch sử |
-| 8 | Purchasing, Goods Receipt | Luồng nhập hàng |
-| 9 | Sales Order | Luồng xuất hàng |
-| 10 | Transfers, Adjustments, Counts | Nghiệp vụ kho nặng hơn |
-| 11 | Dashboard, Reports | Tổng hợp sau cùng |
+| Thứ tự | Màn hình                        | Lý do                          |
+| ------ | ------------------------------- | ------------------------------ |
+| 1      | Login, layout, menu, auth guard | Cần nền để vào các trang sau   |
+| 2      | Users, Units, Categories        | CRUD đơn giản để ôn form/table |
+| 3      | Manufacturers, Series           | Master data cho product        |
+| 4      | Products, Product Detail        | Trung tâm của domain model kit |
+| 5      | Product Variants                | SKU thực tế để quản lý tồn     |
+| 6      | Warehouses, Locations           | Nơi lưu trữ hàng               |
+| 7      | Stock Levels, Stock Movements   | Xem tồn và lịch sử             |
+| 8      | Purchasing, Goods Receipt       | Luồng nhập hàng                |
+| 9      | Sales Order                     | Luồng xuất hàng                |
+| 10     | Transfers, Adjustments, Counts  | Nghiệp vụ kho nặng hơn         |
+| 11     | Dashboard, Reports              | Tổng hợp sau cùng              |
 
 ## Thứ Tự Branch Gợi Ý
 
